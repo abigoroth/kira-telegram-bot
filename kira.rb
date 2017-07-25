@@ -11,7 +11,7 @@ db_config_admin = {
   }
 ActiveRecord::Base.establish_connection(db_config_admin)
 
-token = '142057399:AAG9VFZLHeymfJYrIyVLUKu0PfYsnmA2C8Q'
+token = <token>
 
 class Expenses < ActiveRecord::Base
 end
