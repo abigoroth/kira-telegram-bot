@@ -1,15 +1,15 @@
 # kira-telegram-bot
 Telegram bot that track our monthly expenses from private message or Group.
 
-1. get your API token and place it at <token>
-2. To start the bot, simply `ruby kira.rb`
-3. invite your bot to a group or private message it.
+![2017-07-25 14 54 11](https://user-images.githubusercontent.com/520990/28559480-52057788-7149-11e7-9fb3-385e4d19d8c9.jpg)
 
 ## Usage
-1. install 'active_record' and '
+1. install 'activerecord' and 'telegram-bot-ruby'
 ```$ gem install telegram-bot-ruby```
 ```$ gem install activerecord```
-2. Send message `/h` to get list of command.
+2. get your API token and place it at <token>
+3. To start the bot, simply `ruby kira.rb`
+4. invite your bot to a group or private message it with `\h`.
 
 ## Contributing
 note: Any changes or Pull Request regarding [ruby-telegram-bot](https://github.com/atipugin/telegram-bot-ruby) repo.
