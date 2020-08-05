@@ -1,9 +1,10 @@
 require 'telegram/bot'
 require "active_record"
 require 'date'
+require 'caxlsx'
 
 db_config_admin = {
-  'database' => 'kira', 
+  'database' => 'kira',
   'schema_search_path' => 'public',
   'adapter' => 'postgresql',
   'encoding' => 'utf-8',
@@ -22,7 +23,7 @@ end
 
 Telegram::Bot::Client.run(token) do |bot|
   bot.listen do |message|
-    begin
+    # begin
       expenses = get_expenses(Time.now.month , Time.now.year, message.chat.id)
       puts message.inspect
       msg = message.text.split(" ") rescue []
@@ -70,10 +71,27 @@ Telegram::Bot::Client.run(token) do |bot|
           bot.api.send_message(chat_id: message.chat.id, text: "Expenses #{namex} (id:#{tmp.id}) added. Total expenses for this month is RM#{sum} ")
         end
         # Expenses.create(name: name, price: price, created_at: Time.now, chat_id: message.chat.id)
+      when 'export'
+        p = Axlsx::Package.new
+        month = expenses.group_by{|x| x.created_at.beginning_of_month }.keys.map{|x| x.strftime("%m %y") }
+        month_keys = expenses.group_by{|x| x.created_at.beginning_of_month }.keys
+
+        month.each do |m|
+          p.workbook.add_worksheet(:name => m) do |sheet|
+            sheet.add_row ["No", "Item", "Price", "Created"]
+            expenses.group_by{|x| x.created_at.beginning_of_month }[ month_keys[ month.index(m) ] ].each_with_index do |row,idx|
+              sheet.add_row [idx+1,  row.name, row.price, row.created_at]
+            end
+          end
+          p.use_shared_strings = true
+        end
+        p.serialize("#{message.chat.id}.xlsx")
+        # bot.api.send_document(File.open("#{message.chat.id}.xlsx"))
+        `curl -v -F "chat_id=#{message.chat.id}" -F document=@#{message.chat.id}.xlsx https://api.telegram.org/bot#{token}/sendDocument`
       end
-      
-    rescue Exception => e
-      bot.api.send_message(chat_id: message.chat.id, text: e)
-    end
+
+    # rescue Exception => e
+    #   bot.api.send_message(chat_id: message.chat.id, text: e)
+    # end
   end
 end
